@@ -17,11 +17,12 @@ from forms import *
 #----------------------------------------------------------------------------#
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://postgres:189222999@localhost:5432/fyyur'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 moment = Moment(app)
 app.config.from_object('config')
 db = SQLAlchemy(app)
 
-# TODO: connect to a local postgresql database
 
 #----------------------------------------------------------------------------#
 # Models.
@@ -38,6 +39,7 @@ class Venue(db.Model):
     phone = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
+    shows = db.relationship('Shows', backref = 'show', lazy = True)
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
@@ -52,8 +54,20 @@ class Artist(db.Model):
     genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
+    shows = db.relationship('Shows', backref = 'show', lazy = True)
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
+
+class Artist(db.Model):
+    __tablename__ = 'Shows'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    arist_id = db.Column(db.Integer(), db.ForeignKey('Artist.id'))
+    venue_id = db.Column(db.Integer(), db.ForeignKey('Venue.id'))
+    day = db.Column(db.String(120))
+    image_link = db.Column(db.String(500))
+    facebook_link = db.Column(db.String(120))
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
